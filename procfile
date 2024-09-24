@@ -1,1 +1,1 @@
-web: gunicorn seedai:app
+web: gunicorn app:app
