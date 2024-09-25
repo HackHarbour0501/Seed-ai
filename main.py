@@ -137,6 +137,6 @@ def get_data():
 
 
 if __name__ == "__main__":
-    # insert_data_from_excel()
-    # upload_images_to_cloudinary_and_update_mongo('')
+    insert_data_from_excel()
+    upload_images_to_cloudinary_and_update_mongo('')
     app.run(debug=True)
