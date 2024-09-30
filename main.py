@@ -26,69 +26,6 @@ client = MongoClient("mongodb+srv://user:BkrCNdfdQBiEXgl8@seed.6sftq.mongodb.net
 db = client['Excel']
 collection = db['Sample']
 
-def insert_data_from_excel():
-    try:
-        df = pd.read_excel("C:\\Users\\hp\\Documents\\python\\output.xlsx")  # Replace with your actual Excel file path
-        for column in df.select_dtypes(include=['datetime64[ns]']):
-            df[column] = df[column].astype(str)
-        data_dict = df.to_dict(orient='records')
-        collection.insert_many(data_dict)
-        print("Data inserted successfully into MongoDB!")
-    except Exception as e:
-        print(f"Error inserting data: {e}")
-
-def upload_images_to_cloudinary_and_update_mongo(folder_path):
-# Folder containing images to upload
-    folder_path = f"D:\Python\Flask-tut\static\images"
-
-# List to store image URLs
-    image_urls = []
-
-# Loop through files in the folder and upload to Cloudinary
-    for filename in os.listdir(folder_path):
-        if filename.endswith((".jpg", ".png")):
-            file_path = os.path.join(folder_path, filename)
-        
-        try:
-            # Upload to Cloudinary
-            response = cloudinary.uploader.upload(file_path)
-            image_url = response.get('url')
-            
-            if image_url:
-                # Append image URL to the list
-                image_urls.append(image_url)
-                # print(f"Processed {filename}: {image_url}")
-            else:
-                print(f"Failed to upload {filename}")
-        except Exception as e:
-            print(f"Error processing {filename}: {str(e)}")
-
-# Load the existing Excel file
-    excel_path = r"C:\Users\hp\Documents\python\output.xlsx"
-    sheet_name = "Sheet"  # Use your sheet name
-
-    try:
-    # Read the existing Excel file into a DataFrame
-        df_existing = pd.read_excel(excel_path, sheet_name=sheet_name, engine='openpyxl')
-
-    # Check if the number of uploaded images matches the rows needing URLs
-        if len(image_urls) != len(df_existing):
-            print(f"Warning: Number of images ({len(image_urls)}) does not match the rows in Excel ({len(df_existing)}).")
-
-    # Update the 'image_url' column in the DataFrame with the uploaded URLs in order
-        df_existing['image_url'] = image_urls[:len(df_existing)]  # Ensure not to exceed row count
-
-    # Save the updated DataFrame back to the Excel file
-        with pd.ExcelWriter(excel_path, engine='openpyxl', mode='a', if_sheet_exists='replace') as writer:
-            df_existing.to_excel(writer, sheet_name=sheet_name, index=False)
-
-        print(f"Image URLs updated in {excel_path}")
-
-    except Exception as e:
-        print(f"Error updating Excel file: {str(e)}")
-
-
-
 # Route Definitions
 @app.route("/")
 def home():
